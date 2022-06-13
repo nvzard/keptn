@@ -35,6 +35,8 @@ features:
   automaticProvisioning:
     serviceURL: ""
     message: ""
+  swagger:
+    hideDeprecated: false
   oauth:
     enabled: false
     prefix: "keptn:"
