@@ -5,11 +5,87 @@ import { EnabledComponents, LogDestination } from './logger';
  */
 export interface BridgeOption {
   logging?: LogOptions;
+  oauth?: OAuthOptions;
+  api?: APIOptions;
+  user?: UserOptionURLs;
+  auth?: AuthOptions;
+  features?: FeatureOptions;
+  version?: string;
+  mode?: EnvType;
+  mongo?: MongoOptions;
+}
+
+enum EnvType {
+  TEST = "test",
+  DEV = "development",
 }
 
 interface LogOptions {
   destination?: LogDestination;
   enabledComponents?: string;
+}
+
+interface MongoOptions {
+  user?: string;
+  password?: string;
+  host?: string;
+  db?: string;
+}
+
+interface FeatureOptions {
+  pageSize?: PageSizeOptions;
+  installationType?: string;
+  automaticProvisioningMessage: string;
+  prefixPath?: string;
+  configDir?: string;
+}
+
+interface PageSizeOptions {
+  project?: number;
+  service?: number;
+}
+
+interface OAuthOptions {
+  enabled?: boolean;
+  discoveryURL?: string;
+  baseURL?: string;
+  clientID?: string;
+  clientSecret?: string;
+  scope?: string;
+  tokenAlgorithm?: string;
+  allowedLogoutURL?: string;
+  nameProperty?: string;
+  session?: OAuthSessionOptions;
+}
+
+interface OAuthSessionOptions {
+  secureCookie?: boolean;
+  trustProxy?: string;
+  timeoutMin?: number;
+  validationTimeoutMin?: string;
+}
+
+
+interface APIOptions {
+  url?: string;
+  token?: string;
+  showToken?: boolean;
+}
+
+interface UserOptionURLs {
+  lookAndFeel?: string;
+  integrationPage?: string;
+  CLI?: string;
+  versionCheck?: boolean;
+}
+
+interface AuthOptions {
+  requestTimeLimitMs?: number;
+  requestWithinTimeMs?: number;
+  cleanBucketIntervalMs?: number;
+  basicUsername?: string;
+  basicPassword?: string;
+  authMessage?: string;
 }
 
 /**
