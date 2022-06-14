@@ -11,8 +11,6 @@ export interface BridgeOption {
   logging?: LogOptions;
   oauth?: OAuthOptions;
   api?: APIOptions;
-  urls?: OptionURLs;
-  features?: FeatureOptions;
   version?: string;
   mode?: string;
 }
@@ -27,50 +25,17 @@ interface LogOptions {
   enabledComponents?: string;
 }
 
-interface FeatureOptions {
-  pageSize?: PageSizeOptions;
-  installationType?: string;
-  automaticProvisioningMessage: string;
-  prefixPath?: string;
-  configDir?: string;
-  versionCheck?: boolean;
-}
-
-interface PageSizeOptions {
-  project?: number;
-  service?: number;
-}
-
 interface OAuthOptions {
   enabled?: boolean;
   discoveryURL?: string;
   baseURL?: string;
   clientID?: string;
-  clientSecret?: string;
-  scope?: string;
-  tokenAlgorithm?: string;
-  allowedLogoutURL?: string;
-  nameProperty?: string;
-  session?: OAuthSessionOptions;
 }
-
-interface OAuthSessionOptions {
-  secureCookie?: boolean;
-  trustProxyHops: number;
-  timeoutMin?: number;
-  validationTimeoutMin?: string;
-}
-
 
 interface APIOptions {
   url?: string;
   token?: string;
   showToken?: boolean;
-}
-
-interface OptionURLs {
-  lookAndFeel?: string;
-  integrationPage?: string;
 }
 
 /**
@@ -178,15 +143,13 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     destination: logDestination,
     enabledComponents: loggingComponents,
   };
+
   // API area
-
-  const _showToken = toBool(process.env.SHOW_API_TOKEN ?? "true");
-
+  const _showToken = options?.api?.showToken ?? toBool(process.env.SHOW_API_TOKEN ?? "true");
   const apiUrl = options?.api?.url ?? process.env.API_URL;
   if (typeof(apiUrl) !== "string") {
     throw Error('API_URL is not provided');
   }
-
   let apiToken = options?.api?.token ?? process.env.API_TOKEN;
   if (typeof(apiUrl) !== "string") {
     log.warning(_componentName, 'API_TOKEN was not provided. Fetching it from the K8s secrets via kubectl.');
@@ -201,12 +164,12 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   }
 
   const apiConfig = {
-      showToken: _showToken,
-      url: apiUrl,
-      token: apiToken,
-    };
+    showToken: _showToken,
+    url: apiUrl,
+    token: apiToken,
+  };
 
-  // Auth Area
+  // Auth Area - no configuration necessary
   const authMsg = process.env.AUTH_MSG ?? `keptn auth --endpoint=${apiUrl} --api-token=${apiToken}`;
   const basicUser = process.env.BASIC_AUTH_USERNAME;
   const basicPass = process.env.BASIC_AUTH_PASSWORD;
@@ -215,21 +178,21 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   const cleanBucket = toInt(process.env.CLEAN_BUCKET_INTERVAL, 60);
 
   const authConfig = {
-      authMessage: authMsg,
-      basicUsername: basicUser,
-      basicPassword: basicPass,
-      requestTimeLimitMs: requestLimit,
-      requestWithinTimeMs: requestWithinTime,
-      cleanBucketIntervalMs: cleanBucket,
-    };
+    authMessage: authMsg,
+    basicUsername: basicUser,
+    basicPassword: basicPass,
+    requestTimeLimitMs: requestLimit,
+    requestWithinTimeMs: requestWithinTime,
+    cleanBucketIntervalMs: cleanBucket,
+  };
 
   // OAuth area
   const logoutURL = process.env.OAUTH_ALLOWED_LOGOUT_URLS ?? '';
-  const baseURL = process.env.OAUTH_BASE_URL;
-  const clientID = process.env.OAUTH_CLIENT_ID;
+  const baseURL = options?.oauth?.baseURL ?? process.env.OAUTH_BASE_URL;
+  const clientID = options?.oauth?.clientID ?? process.env.OAUTH_CLIENT_ID;
   const clientSecret = process.env.OAUTH_CLIENT_SECRET;
-  const discoveryURL = process.env.OAUTH_DISCOVERY;
-  const enabled = toBool(process.env.OAUTH_ENABLED ?? "false");
+  const discoveryURL = options?.oauth?.discoveryURL ?? process.env.OAUTH_DISCOVERY;
+  const enabled = options?.oauth?.enabled ?? toBool(process.env.OAUTH_ENABLED ?? "false");
   const nameProperty = process.env.OAUTH_NAME_PROPERTY;
   const scope = process.env.OAUTH_SCOPE ?? "";
   const secureCookie = toBool(process.env.SECURE_COOKIE ?? "false");
