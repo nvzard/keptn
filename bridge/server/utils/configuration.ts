@@ -15,7 +15,7 @@ export interface BridgeOption {
   mode?: string;
 }
 
-enum EnvType {
+export enum EnvType {
   TEST = "test",
   DEV = "development",
 }
@@ -53,12 +53,12 @@ export interface BridgeConfiguration {
   mongo: MongoConfig;
 }
 
-interface LogConfiguration {
+export interface LogConfiguration {
   destination: LogDestination;
   enabledComponents: EnabledComponents;
 }
 
-interface AuthConfig {
+export interface AuthConfig {
   requestTimeLimitMs: number;
   requestWithinTimeMs: number;
   cleanBucketIntervalMs: number;
@@ -67,7 +67,7 @@ interface AuthConfig {
   authMessage: string;
 }
 
-interface OAuthConfig {
+export interface OAuthConfig {
   enabled: boolean;
   discoveryURL: string;
   baseURL: string;
@@ -80,20 +80,20 @@ interface OAuthConfig {
   session: OAuthSessionConfig;
 }
 
-interface OAuthSessionConfig {
+export interface OAuthSessionConfig {
   secureCookie: boolean;
   trustProxyHops: number;
   timeoutMin: number;
   validationTimeoutMin: number;
 }
 
-interface APIConfig {
+export interface APIConfig {
   url: string;
   token: string | undefined;
   showToken: boolean;
 }
 
-interface FeatureConfig {
+export interface FeatureConfig {
   pageSize: PageSizeConfiguration;
   installationType: string;
   automaticProvisioningMessage: string;
@@ -113,7 +113,7 @@ interface URLsConfig {
   CLI: string;
 }
 
-interface MongoConfig {
+export interface MongoConfig {
   user: string;
   password: string;
   host: string;
