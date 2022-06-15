@@ -12,6 +12,7 @@ import { AuthType } from '../../shared/models/auth-type';
 import { KeptnVersions } from '../../shared/interfaces/keptn-versions';
 import { printError } from '../utils/print-utils';
 import { ComponentLogger } from '../utils/logger';
+import { version } from 'os';
 
 const router = Router();
 const log = new ComponentLogger('APIService');
@@ -24,6 +25,7 @@ const apiRouter = (params: {
   authType: AuthType;
   clientFeatureFlags: ClientFeatureFlags;
   session: SessionService | undefined;
+  version: string;
 }): Router => {
   // fetch parameters for bridgeInfo endpoint
   const {
@@ -34,10 +36,11 @@ const apiRouter = (params: {
     authType,
     clientFeatureFlags: featureFlags,
     session,
+    version
   } = params;
   const enableVersionCheckFeature = process.env.ENABLE_VERSION_CHECK !== 'false';
   const showApiToken = process.env.SHOW_API_TOKEN !== 'false';
-  const bridgeVersion = process.env.VERSION;
+  const bridgeVersion = version;
   const projectsPageSize = EnvironmentUtils.getNumber(process.env.PROJECTS_PAGE_SIZE);
   const servicesPageSize = EnvironmentUtils.getNumber(process.env.SERVICES_PAGE_SIZE);
   const keptnInstallationType = process.env.KEPTN_INSTALLATION_TYPE;

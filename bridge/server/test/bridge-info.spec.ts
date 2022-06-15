@@ -21,6 +21,7 @@ describe('Test /bridgeInfo', () => {
 
   it('should return bridgeInfo', async () => {
     const response = await request(app).get('/api/bridgeInfo');
+    console.log(response.body)
     expect(response.body).toEqual({
       bridgeVersion: 'develop',
       apiUrl: global.baseUrl,

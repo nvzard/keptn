@@ -103,6 +103,7 @@ async function init(configuration: BridgeConfiguration): Promise<Express> {
       authType,
       clientFeatureFlags,
       session,
+      version: configuration.version,
     })
   );
 

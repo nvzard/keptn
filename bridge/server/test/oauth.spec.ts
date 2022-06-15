@@ -5,8 +5,6 @@ import { Express, Request } from 'express';
 import { Jest } from '@jest/environment';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { jest } from '@jest/globals';
-import { baseConfig, baseOptions } from '../.jest/setupServer';
-import { getConfiguration } from '../utils/configuration';
 
 let store: CachedStore = {};
 const fakeGetOAuthSecrets = jest.fn();
@@ -47,6 +45,8 @@ jest.unstable_mockModule('../user/session', () => {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { TestUtils } = await import('../.jest/test.utils');
 const { init } = await import('../app');
+const { baseOptions } = await import('../.jest/setupServer');
+const { getConfiguration } = await import('../utils/configuration');
 
 // import { jest } from '@jest/globals';
 
@@ -77,7 +77,7 @@ describe('Test OAuth env variables', () => {
   });
 
   it('should throw errors if session secret is not provided', async () => {
-    let opt = baseConfig;
+    let opt = getConfiguration(baseOptions);
     opt.oauth.enabled = true;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -88,11 +88,13 @@ describe('Test OAuth env variables', () => {
         databaseEncryptSecret: 'database_secret_'.repeat(2),
       };
     });
-    await expect(init(opt)).rejects.toThrowError();
+    await expect(async () => {
+      await init(opt);
+    }).rejects.toThrowError();
   });
 
   it('should throw errors if database encrypt secret is not provided', async () => {
-    let opt = baseConfig;
+    let opt = getConfiguration(baseOptions);
     opt.oauth.enabled = true;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -103,11 +105,13 @@ describe('Test OAuth env variables', () => {
         databaseEncryptSecret: '',
       };
     });
-    await expect(init(opt)).rejects.toThrowError();
+    await expect(async () => {
+      await init(opt);
+    }).rejects.toThrowError();
   });
 
   it('should throw errors if database encrypt secret length is invalid', async () => {
-    let opt = baseConfig;
+    let opt = getConfiguration(baseOptions);
     opt.oauth.enabled = true;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -118,11 +122,13 @@ describe('Test OAuth env variables', () => {
         databaseEncryptSecret: 'mySecret',
       };
     });
-    await expect(init(opt)).rejects.toThrowError();
+    await expect(async () => {
+      await init(opt);
+    }).rejects.toThrowError();
   });
 
   it('should not register OAuth endpoints if OAuth is not enabled', async () => {
-    let opt = baseConfig;
+    let opt = getConfiguration(baseOptions);
     opt.oauth.enabled = false;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -377,18 +383,6 @@ function mockOpenId(
       });
     },
   };
-}
-
-function setOrDeleteProperty(
-  env: Record<string, string | undefined>,
-  parameter: OAuthParameters,
-  key: keyof OAuthParameters
-): void {
-  if (parameter[key]) {
-    process.env[key] = parameter[key];
-  } else {
-    delete process.env[key];
-  }
 }
 
 async function login(app: Express): Promise<{ state: string; response: request.Response; cookies: string[] }> {

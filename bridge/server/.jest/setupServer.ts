@@ -25,8 +25,13 @@ const baseOptions: BridgeOption = {
 
 const baseConfig = getConfiguration(baseOptions);
 
-const setupServer = async (config: BridgeConfiguration = baseConfig): Promise<Express> => {
+const setupServer = async (config: BridgeConfiguration = Object.create({})): Promise<Express> => {
   global.baseUrl = 'http://localhost/api/';
+
+  // create a new fresh configuration
+  if(config && Object.keys(config).length === 0) {
+    config = getConfiguration(baseOptions);
+  }
 
   global.axiosInstance = Axios.create({
     // accepts self-signed ssl certificate

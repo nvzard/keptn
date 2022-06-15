@@ -49,7 +49,7 @@ export class TestUtils {
         baseURL: 'http://localhost',
         discoveryURL: 'http://localhost/.well-known/openid-configuration',
       }
-    }
+    };
     const conf = getConfiguration(opts);
     return init(conf);
   }

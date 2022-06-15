@@ -5,7 +5,6 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import MockAdapter from 'axios-mock-adapter';
 import { KeptnVersions } from '../../shared/interfaces/keptn-versions';
-import { baseConfig } from '../.jest/setupServer';
 
 const mockInstance = Axios.create();
 
@@ -14,6 +13,7 @@ jest.unstable_mockModule('../services/axios-instance', () => {
 });
 
 const { init } = await import('../app');
+const { baseConfig } = await import('../.jest/setupServer');
 
 describe('Test /version.json', () => {
   let app: Express;
