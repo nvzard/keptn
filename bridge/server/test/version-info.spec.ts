@@ -5,6 +5,7 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import MockAdapter from 'axios-mock-adapter';
 import { KeptnVersions } from '../../shared/interfaces/keptn-versions';
+import { baseConfig } from '../.jest/setupServer';
 
 const mockInstance = Axios.create();
 
@@ -19,7 +20,7 @@ describe('Test /version.json', () => {
   let axiosMock: MockAdapter;
 
   beforeAll(async () => {
-    app = await init();
+    app = await init(baseConfig);
     axiosMock = new MockAdapter(mockInstance);
   });
 

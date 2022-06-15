@@ -13,6 +13,7 @@ export interface BridgeOption {
   api?: APIOptions;
   version?: string;
   mode?: string;
+  mongo?: MongoOptions
 }
 
 export enum EnvType {
@@ -36,6 +37,12 @@ interface APIOptions {
   url?: string;
   token?: string;
   showToken?: boolean;
+}
+
+interface MongoOptions {
+  user: string;
+  password: string;
+  host: string;
 }
 
 /**
@@ -318,9 +325,9 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
 
   // mongo
   const db = process.env[EnvVar.MONGODB_DATABASE] ?? 'openid';
-  const host = process.env[EnvVar.MONGODB_HOST];
-  const pwd = process.env[EnvVar.MONGODB_PASSWORD];
-  const usr = process.env[EnvVar.MONGODB_USER];
+  const host = options?.mongo?.host ?? process.env[EnvVar.MONGODB_HOST];
+  const pwd = options?.mongo?.password ?? process.env[EnvVar.MONGODB_PASSWORD];
+  const usr = options?.mongo?.user ?? process.env[EnvVar.MONGODB_USER];
 
   const errMsg = 'Could not construct mongodb connection string: env vars "MONGODB_HOST", "MONGODB_USER" and "MONGODB_PASSWORD" have to be set';
   if (typeof(host) !== "string") {

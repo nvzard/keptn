@@ -10,7 +10,7 @@ describe('Test setting header authorization', () => {
   const authorizationHeader = `Bearer ${myAccessToken}`;
 
   beforeAll(async () => {
-    await setupServer('');
+    await setupServer();
     axiosMock = new MockAdapter(global.axiosInstance);
   });
 

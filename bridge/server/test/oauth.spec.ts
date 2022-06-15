@@ -5,6 +5,8 @@ import { Express, Request } from 'express';
 import { Jest } from '@jest/environment';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { jest } from '@jest/globals';
+import { baseConfig, baseOptions } from '../.jest/setupServer';
+import { getConfiguration } from '../utils/configuration';
 
 let store: CachedStore = {};
 const fakeGetOAuthSecrets = jest.fn();
@@ -49,9 +51,9 @@ const { init } = await import('../app');
 // import { jest } from '@jest/globals';
 
 interface OAuthParameters {
-  OAUTH_CLIENT_ID: string | undefined;
-  OAUTH_BASE_URL: string | undefined;
-  OAUTH_DISCOVERY: string | undefined;
+  clientID: string | undefined;
+  baseURL: string | undefined;
+  discoveryURL: string | undefined;
 }
 
 interface CachedStore {
@@ -77,79 +79,82 @@ describe('Test OAuth env variables', () => {
   it('should exit if insufficient parameters', async () => {
     const parameters: OAuthParameters[] = [
       {
-        OAUTH_CLIENT_ID: 'myClientID',
-        OAUTH_BASE_URL: 'http://localhost',
-        OAUTH_DISCOVERY: undefined,
+        clientID: 'myClientID',
+        baseURL: 'http://localhost',
+        discoveryURL: undefined,
       },
       {
-        OAUTH_CLIENT_ID: 'myClientID',
-        OAUTH_BASE_URL: undefined,
-        OAUTH_DISCOVERY: 'http://localhost/.well-known/openid-configuration',
+        clientID: 'myClientID',
+        baseURL: undefined,
+        discoveryURL: 'http://localhost/.well-known/openid-configuration',
       },
       {
-        OAUTH_CLIENT_ID: undefined,
-        OAUTH_BASE_URL: 'http://localhost',
-        OAUTH_DISCOVERY: 'http://localhost/.well-known/openid-configuration',
+        clientID: undefined,
+        baseURL: 'http://localhost',
+        discoveryURL: 'http://localhost/.well-known/openid-configuration',
       },
     ];
     for (const parameter of parameters) {
-      process.env.OAUTH_ENABLED = 'true';
-      setOrDeleteProperty(process.env, parameter, 'OAUTH_CLIENT_ID');
-      setOrDeleteProperty(process.env, parameter, 'OAUTH_BASE_URL');
-      setOrDeleteProperty(process.env, parameter, 'OAUTH_DISCOVERY');
-
-      await expect(init()).rejects.toThrowError();
+      let conf = baseOptions;
+      conf.oauth!.clientID = parameter.clientID;
+      conf.oauth!.baseURL = parameter.baseURL;
+      conf.oauth!.discoveryURL = parameter.discoveryURL;
+      await expect(init(getConfiguration(conf))).rejects.toThrowError();
     }
   });
 
   it('should throw errors if session secret is not provided', async () => {
-    process.env.OAUTH_ENABLED = 'true';
-    process.env.OAUTH_CLIENT_ID = 'myClientID';
-    process.env.OAUTH_BASE_URL = 'http://localhost';
-    process.env.OAUTH_DISCOVERY = 'http://localhost/.well-known/openid-configuration';
+    let opt = baseConfig;
+    opt.oauth.enabled = true;
+    opt.oauth.clientID = 'myClientID';
+    opt.oauth.baseURL = 'http://localhost';
+    opt.oauth.discoveryURL = 'http://localhost/.well-known/openid-configuration';
     fakeGetOAuthSecrets.mockImplementation(() => {
       return {
         sessionSecret: '',
         databaseEncryptSecret: 'database_secret_'.repeat(2),
       };
     });
-    await expect(init()).rejects.toThrowError();
+    await expect(init(opt)).rejects.toThrowError();
   });
 
   it('should throw errors if database encrypt secret is not provided', async () => {
-    process.env.OAUTH_ENABLED = 'true';
-    process.env.OAUTH_CLIENT_ID = 'myClientID';
-    process.env.OAUTH_BASE_URL = 'http://localhost';
-    process.env.OAUTH_DISCOVERY = 'http://localhost/.well-known/openid-configuration';
+    let opt = baseConfig;
+    opt.oauth.enabled = true;
+    opt.oauth.clientID = 'myClientID';
+    opt.oauth.baseURL = 'http://localhost';
+    opt.oauth.discoveryURL = 'http://localhost/.well-known/openid-configuration';
     fakeGetOAuthSecrets.mockImplementation(() => {
       return {
         sessionSecret: 'abcd',
         databaseEncryptSecret: '',
       };
     });
-    await expect(init()).rejects.toThrowError();
+    await expect(init(opt)).rejects.toThrowError();
   });
 
   it('should throw errors if database encrypt secret length is invalid', async () => {
-    process.env.OAUTH_ENABLED = 'true';
-    process.env.OAUTH_CLIENT_ID = 'myClientID';
-    process.env.OAUTH_BASE_URL = 'http://localhost';
-    process.env.OAUTH_DISCOVERY = 'http://localhost/.well-known/openid-configuration';
+    let opt = baseConfig;
+    opt.oauth.enabled = true;
+    opt.oauth.clientID = 'myClientID';
+    opt.oauth.baseURL = 'http://localhost';
+    opt.oauth.discoveryURL = 'http://localhost/.well-known/openid-configuration';
     fakeGetOAuthSecrets.mockImplementation(() => {
       return {
         sessionSecret: 'abcd',
         databaseEncryptSecret: 'mySecret',
       };
     });
-    await expect(init()).rejects.toThrowError();
+    await expect(init(opt)).rejects.toThrowError();
   });
 
   it('should not register OAuth endpoints if OAuth is not enabled', async () => {
-    delete process.env.OAUTH_ENABLED;
-    process.env.OAUTH_CLIENT_ID = 'myClientID';
-    process.env.OAUTH_BASE_URL = 'http://localhost';
-    process.env.OAUTH_DISCOVERY = 'http://localhost/.well-known/openid-configuration';
-    const app = await init();
+    let opt = baseConfig;
+    opt.oauth.enabled = false;
+    opt.oauth.clientID = 'myClientID';
+    opt.oauth.baseURL = 'http://localhost';
+    opt.oauth.discoveryURL = 'http://localhost/.well-known/openid-configuration';
+    const app = await init(opt);
     // if not found, index.html is sent
     for (const endpoint of ['/oauth/login', '/oauth/redirect']) {
       const response = await request(app).get(endpoint);
