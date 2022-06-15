@@ -47,10 +47,10 @@ export class TestUtils {
         enabled: true,
         clientID: 'myClientID',
         baseURL: 'http://localhost',
-        discoveryURL: 'http://localhost/.well-known/openid-configuration'
+        discoveryURL: 'http://localhost/.well-known/openid-configuration',
       }
     }
-    const conf = getConfiguration(opts)
+    const conf = getConfiguration(opts);
     return init(conf);
   }
 }

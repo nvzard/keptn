@@ -76,33 +76,6 @@ describe('Test OAuth env variables', () => {
     mockSecrets();
   });
 
-  it('should exit if insufficient parameters', async () => {
-    const parameters: OAuthParameters[] = [
-      {
-        clientID: 'myClientID',
-        baseURL: 'http://localhost',
-        discoveryURL: undefined,
-      },
-      {
-        clientID: 'myClientID',
-        baseURL: undefined,
-        discoveryURL: 'http://localhost/.well-known/openid-configuration',
-      },
-      {
-        clientID: undefined,
-        baseURL: 'http://localhost',
-        discoveryURL: 'http://localhost/.well-known/openid-configuration',
-      },
-    ];
-    for (const parameter of parameters) {
-      let conf = baseOptions;
-      conf.oauth!.clientID = parameter.clientID;
-      conf.oauth!.baseURL = parameter.baseURL;
-      conf.oauth!.discoveryURL = parameter.discoveryURL;
-      await expect(init(getConfiguration(conf))).rejects.toThrowError();
-    }
-  });
-
   it('should throw errors if session secret is not provided', async () => {
     let opt = baseConfig;
     opt.oauth.enabled = true;
@@ -427,13 +400,7 @@ async function login(app: Express): Promise<{ state: string; response: request.R
 
 async function setupOAuth(): Promise<Express> {
   mockSecrets();
-  await mockSavingValidationData();
   return TestUtils.setupOAuthTest();
-}
-
-async function mockSavingValidationData(): Promise<void> {
-  process.env.OAUTH_SESSION_SECRET = 'mySessionSecret';
-  process.env.OAUTH_DATABASE_ENCRYPT_SECRET = 'database_secret_'.repeat(2); // length of 32
 }
 
 function mockSecrets(): void {
