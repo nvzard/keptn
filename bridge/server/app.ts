@@ -262,7 +262,7 @@ function updateBucket(loginAttempt: boolean, authConfig: AuthConfig, userIP?: st
     throttleBucket[userIP].push(new Date().getTime());
 
     // delete old requests. Just keep the latest {requestLimitWithinTime} requests
-    if (throttleBucket[userIP].length > authConfig.requestWithinTimeMs) {
+    if (throttleBucket[userIP].length > authConfig.nRequestWithinTime) {
       throttleBucket[userIP].shift();
     }
   }
@@ -276,7 +276,7 @@ function updateBucket(loginAttempt: boolean, authConfig: AuthConfig, userIP?: st
  */
 function isIPThrottled(ip: string, authConfig: AuthConfig): boolean {
   const ipBucket = throttleBucket[ip];
-  return ipBucket && ipBucket.length >= authConfig.requestWithinTimeMs && new Date().getTime() - ipBucket[0] <= authConfig.requestTimeLimitMs;
+  return ipBucket && ipBucket.length >= authConfig.nRequestWithinTime && new Date().getTime() - ipBucket[0] <= authConfig.requestTimeLimitMs;
 }
 
 /**
