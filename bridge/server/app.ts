@@ -48,7 +48,7 @@ async function init(configuration: BridgeConfiguration): Promise<Express> {
   EnvironmentUtils.setFeatureFlags(process.env, serverFeatureFlags);
   EnvironmentUtils.setFeatureFlags(process.env, clientFeatureFlags);
 
-  const { api, mode, urls } = configuration;
+  const { mode, urls } = configuration;
 
   const rootFolder = join(__dirname, mode === EnvType.TEST ? '../' : '../../../');
 
@@ -96,14 +96,10 @@ async function init(configuration: BridgeConfiguration): Promise<Express> {
   app.use(
     '/api',
     apiRouter({
-      apiUrl: api.url,
-      apiToken: api.token,
-      cliDownloadLink: urls.CLI,
-      integrationsPageLink: urls.integrationPage,
       authType,
       clientFeatureFlags,
       session,
-      version: configuration.version,
+      configuration,
     })
   );
 
@@ -160,7 +156,7 @@ async function setAuth(app: Express, configuration: BridgeConfiguration): Promis
   let authType: AuthType;
   let session: SessionService | undefined;
   if (configuration.oauth.enabled) {
-    session = await setupOAuth(app, configuration.oauth.discoveryURL, configuration.oauth.clientID, configuration.oauth.baseURL);
+    session = await setupOAuth(app, configuration);
     authType = AuthType.OAUTH;
   } else if (configuration.auth.basicUsername && configuration.auth.basicPassword) {
     authType = AuthType.BASIC;

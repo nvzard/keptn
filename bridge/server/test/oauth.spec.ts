@@ -16,14 +16,14 @@ jest.unstable_mockModule('../user/secrets', () => {
     },
   };
 });
-// has to be imported after secrets mock
+// has to be imported after secrets mock due to mock limitations of jest
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { SessionService } = await import('../user/session');
 
 jest.unstable_mockModule('../user/session', () => {
   return {
     SessionService: jest.fn().mockImplementation(() => {
-      return Object.assign(new SessionService(), {
+      return Object.assign(new SessionService(TestUtils.config), {
         async saveValidationData(state: string, codeVerifier: string, nonce: string): Promise<void> {
           store[state] = {
             _id: state,
@@ -47,14 +47,6 @@ const { TestUtils } = await import('../.jest/test.utils');
 const { init } = await import('../app');
 const { baseOptions } = await import('../.jest/setupServer');
 const { getConfiguration } = await import('../utils/configuration');
-
-// import { jest } from '@jest/globals';
-
-interface OAuthParameters {
-  clientID: string | undefined;
-  baseURL: string | undefined;
-  discoveryURL: string | undefined;
-}
 
 interface CachedStore {
   [state: string]: { _id: string; codeVerifier: string; nonce: string };

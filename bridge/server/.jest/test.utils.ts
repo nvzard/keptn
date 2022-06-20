@@ -41,16 +41,16 @@ export class TestUtils {
   }
 
   public static async setupOAuthTest(): Promise<Express> {
-    const opts: BridgeOption = {
-      ...baseOptions,
-      oauth: {
-        enabled: true,
-        clientID: 'myClientID',
-        baseURL: 'http://localhost',
-        discoveryURL: 'http://localhost/.well-known/openid-configuration',
-      }
-    };
-    const conf = getConfiguration(opts);
-    return init(conf);
+    return init(this.config);
   }
+
+  public static readonly config = getConfiguration({
+    ...baseOptions,
+    oauth: {
+      enabled: true,
+      clientID: 'myClientID',
+      baseURL: 'http://localhost',
+      discoveryURL: 'http://localhost/.well-known/openid-configuration',
+    }
+  });
 }

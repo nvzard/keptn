@@ -9,8 +9,10 @@ import { EnabledComponents, LogDestination, logger as log } from './logger';
  */
 export interface BridgeOption {
   logging?: LogOptions;
+  auth?: AuthOptions;
   oauth?: OAuthOptions;
   api?: APIOptions;
+  feature?: FeatureOption;
   version?: string;
   mode?: string;
   mongo?: MongoOptions
@@ -24,6 +26,10 @@ export enum EnvType {
 interface LogOptions {
   destination?: LogDestination;
   enabledComponents?: string;
+}
+
+interface AuthOptions {
+  authMessage?: string;
 }
 
 interface OAuthOptions {
@@ -43,6 +49,10 @@ interface MongoOptions {
   user: string;
   password: string;
   host: string;
+}
+
+interface FeatureOption {
+  automaticProvisioningMessage?: string;
 }
 
 /**
@@ -223,7 +233,7 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   };
 
   // Auth Area - no configuration necessary
-  const authMsg = process.env[EnvVar.AUTH_MSG] ?? `keptn auth --endpoint=${apiUrl} --api-token=${apiToken}`;
+  const authMsg = options?.auth?.authMessage ?? process.env[EnvVar.AUTH_MSG] ?? `keptn auth --endpoint=${apiUrl} --api-token=${apiToken}`;
   const basicUser = process.env[EnvVar.BASIC_AUTH_USERNAME];
   const basicPass = process.env[EnvVar.BASIC_AUTH_PASSWORD];
   const requestLimit = toInt(process.env[EnvVar.REQUEST_TIME_LIMIT], 60) * 60 * 1000;
@@ -303,7 +313,7 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     };
 
   // feature
-  const provisioningMsg = process.env[EnvVar.AUTOMATIC_PROVISIONING_MSG] ?? "";
+  const provisioningMsg = options?.feature?.automaticProvisioningMessage ?? process.env[EnvVar.AUTOMATIC_PROVISIONING_MSG] ?? "";
   const configDir = process.env[EnvVar.CONFIG_DIR] ?? join(dirname(fileURLToPath(import.meta.url)), '../../../../config');
   const installationType = process.env[EnvVar.KEPTN_INSTALLATION_TYPE] ?? "QUALITY_GATES,CONTINUOUS_OPERATIONS,CONTINUOUS_DELIVERY";
   const projectSize = toInt(process.env[EnvVar.PROJECTS_PAGE_SIZE], 50); // client\app\_services\api.service.ts
