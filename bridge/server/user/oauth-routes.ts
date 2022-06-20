@@ -36,7 +36,7 @@ function oauthRouter(
   logoutUri: string,
   reduceRefreshDateSeconds: number,
   session: SessionService,
-  configuration: BridgeConfiguration,
+  configuration: BridgeConfiguration
 ): Router {
   const router = Router();
   const additionalScopes = configuration.oauth.scope ? ` ${configuration.oauth.scope.trim()}` : '';

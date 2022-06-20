@@ -7,11 +7,10 @@ const HOST = process.env.HOST || '0.0.0.0';
 let configuration: BridgeConfiguration;
 try {
   configuration = getConfiguration();
-} catch(e) {
+} catch (e) {
   console.log(`Error while configuring the application. Cause: ${e}`);
   process.exit(1);
 }
-
 
 // init destination and debug flags
 logger.configure(configuration.logging.destination, configuration.logging.enabledComponents);

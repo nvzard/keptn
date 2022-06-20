@@ -25,12 +25,7 @@ const apiRouter = (params: {
   configuration: BridgeConfiguration;
 }): Router => {
   // fetch parameters for bridgeInfo endpoint
-  const {
-    authType,
-    clientFeatureFlags: featureFlags,
-    session,
-    configuration,
-  } = params;
+  const { authType, clientFeatureFlags: featureFlags, session, configuration } = params;
   const enableVersionCheckFeature = configuration.features.versionCheck;
   const showApiToken = configuration.api.showToken;
   const bridgeVersion = configuration.version;

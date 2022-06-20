@@ -12,10 +12,7 @@ const reduceRefreshDateSeconds = 10;
 
 const log = new ComponentLogger('OAuth');
 
-async function setupOAuth(
-  app: Express,
-  configuration: BridgeConfiguration
-): Promise<SessionService> {
+async function setupOAuth(app: Express, configuration: BridgeConfiguration): Promise<SessionService> {
   const session = await new SessionService(configuration).init();
   const prefix = getBuildableRootLocation(configuration);
   let baseUrl = configuration.oauth.baseURL;
@@ -81,7 +78,7 @@ function setRoutes(
   redirectUri: string,
   logoutUri: string,
   session: SessionService,
-  configuration: BridgeConfiguration,
+  configuration: BridgeConfiguration
 ): void {
   // Initializing OAuth middleware.
   app.use(oauthRouter(client, redirectUri, logoutUri, reduceRefreshDateSeconds, session, configuration));

@@ -6,21 +6,21 @@ import { BridgeConfiguration, BridgeOption, getConfiguration } from '../utils/co
 
 const baseOptions: BridgeOption = {
   api: {
-    token: "apiToken",
-    url: "http://localhost/api/",
+    token: 'apiToken',
+    url: 'http://localhost/api/',
   },
   oauth: {
-    baseURL: "http://baseoauthurl",
-    clientID: "myclientid",
-    discoveryURL: "http://discoveryurl",
+    baseURL: 'http://baseoauthurl',
+    clientID: 'myclientid',
+    discoveryURL: 'http://discoveryurl',
     enabled: false,
   },
   mongo: {
-    host: "mongo://localhost",
-    password: "pwd",
-    user: "usr",
+    host: 'mongo://localhost',
+    password: 'pwd',
+    user: 'usr',
   },
-  version: "develop"
+  version: 'develop'
 }
 
 const baseConfig = getConfiguration(baseOptions);

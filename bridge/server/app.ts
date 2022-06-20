@@ -38,7 +38,6 @@ const defaultContentSecurityPolicyOptions: Readonly<ContentSecurityPolicyOptions
   },
 };
 
-
 const log = new ComponentLogger('App');
 
 async function init(configuration: BridgeConfiguration): Promise<Express> {
@@ -152,7 +151,10 @@ async function setBasicAUTH(app: Express, auth: AuthConfig): Promise<void> {
   });
 }
 
-async function setAuth(app: Express, configuration: BridgeConfiguration): Promise<{ authType: AuthType; session?: SessionService }> {
+async function setAuth(
+  app: Express,
+  configuration: BridgeConfiguration
+): Promise<{ authType: AuthType; session?: SessionService }> {
   let authType: AuthType;
   let session: SessionService | undefined;
   if (configuration.oauth.enabled) {
@@ -174,10 +176,7 @@ function setupDefaultLookAndFeel(mode: EnvType, rootFolder: string): void {
     log.info('Installing default Look-and-Feel');
 
     const destDir = join(rootFolder, 'dist/assets/branding');
-    const srcDir = join(
-      rootFolder,
-      `${mode === EnvType.DEV ? 'client' : 'dist'}/assets/default-branding`
-    );
+    const srcDir = join(rootFolder, `${mode === EnvType.DEV ? 'client' : 'dist'}/assets/default-branding`);
     const brandingFiles = ['app-config.json', 'logo.png', 'logo_inverted.png'];
 
     if (!existsSync(destDir)) {
@@ -273,7 +272,11 @@ function updateBucket(loginAttempt: boolean, authConfig: AuthConfig, userIP?: st
  */
 function isIPThrottled(ip: string, authConfig: AuthConfig): boolean {
   const ipBucket = throttleBucket[ip];
-  return ipBucket && ipBucket.length >= authConfig.nRequestWithinTime && new Date().getTime() - ipBucket[0] <= authConfig.requestTimeLimitMs;
+  return (
+    ipBucket &&
+    ipBucket.length >= authConfig.nRequestWithinTime &&
+    new Date().getTime() - ipBucket[0] <= authConfig.requestTimeLimitMs
+  );
 }
 
 /**

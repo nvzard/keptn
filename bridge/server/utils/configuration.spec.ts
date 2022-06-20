@@ -1,32 +1,30 @@
-import { url } from 'inspector';
-import { token } from 'morgan';
 import { EnvType, EnvVar, getConfiguration } from './configuration';
 import { LogDestination } from './logger';
 
 describe('Configuration', () => {
   beforeEach(() => {
     cleanEnv();
-    process.env[EnvVar.API_TOKEN] = "some value to do not run kubectl cmds as part of the tests"
+    process.env[EnvVar.API_TOKEN] = 'some value to do not run kubectl cmds as part of the tests';
   });
   afterEach(() => {
     cleanEnv();
   });
 
   function cleanEnv() {
-    for(const e in EnvVar) {
-      delete process.env[e]
+    for (const e in EnvVar) {
+      delete process.env[e];
     }
   }
 
-  const defaultAPIURL = "http://localhost";
-  const defaultAPIToken = "abcdefgh";
+  const defaultAPIURL = 'http://localhost';
+  const defaultAPIToken = 'abcdefgh';
 
   function setBasicEnvVar() {
     process.env[EnvVar.API_URL] = defaultAPIURL;
     process.env[EnvVar.API_TOKEN] = defaultAPIToken;
-    process.env[EnvVar.MONGODB_HOST] = "";
-    process.env[EnvVar.MONGODB_USER] = "";
-    process.env[EnvVar.MONGODB_PASSWORD] = "";
+    process.env[EnvVar.MONGODB_HOST] = '';
+    process.env[EnvVar.MONGODB_USER] = '';
+    process.env[EnvVar.MONGODB_PASSWORD] = '';
   }
 
   it('should use default values', () => {
@@ -40,7 +38,9 @@ describe('Configuration', () => {
     expect(result.api.token).toStrictEqual(defaultAPIToken);
     expect(result.api.url).toStrictEqual(defaultAPIURL);
     // Auth
-    expect(result.auth.authMessage).toStrictEqual(`keptn auth --endpoint=${defaultAPIURL} --api-token=${defaultAPIToken}`);
+    expect(result.auth.authMessage).toStrictEqual(
+      `keptn auth --endpoint=${defaultAPIURL} --api-token=${defaultAPIToken}`
+    );
     expect(result.auth.basicPassword).toStrictEqual(undefined);
     expect(result.auth.basicUsername).toStrictEqual(undefined);
     expect(result.auth.cleanBucketIntervalMs).toStrictEqual(60 * 60 * 1000); //1h
@@ -79,23 +79,23 @@ describe('Configuration', () => {
     expect(result.mongo.user).toStrictEqual('');
 
     expect(result.mode).toStrictEqual(EnvType.DEV);
-    expect(result.version).toStrictEqual("develop");
+    expect(result.version).toStrictEqual('develop');
   });
 
   it('should set values using options object', () => {
     setBasicEnvVar();
-    const oauthBaseUrl = "mybaseurl";
-    const oauthClientID = "myclientid";
-    const oauthDiscovery = "mydiscovery";
-    const apiUrl = "myapiurl";
-    const apiToken = "mytoken";
-    const version = "0.0.0"
+    const oauthBaseUrl = 'mybaseurl';
+    const oauthClientID = 'myclientid';
+    const oauthDiscovery = 'mydiscovery';
+    const apiUrl = 'myapiurl';
+    const apiToken = 'mytoken';
+    const version = '0.0.0';
     let result = getConfiguration({
       logging: {
         enabledComponents: 'a=true,b=false,c=true',
       },
       oauth: {
-        baseURL:oauthBaseUrl,
+        baseURL: oauthBaseUrl,
         clientID: oauthClientID,
         discoveryURL: oauthDiscovery,
         enabled: true,
@@ -105,7 +105,7 @@ describe('Configuration', () => {
         token: apiToken,
         url: apiUrl,
       },
-      mode: "test",
+      mode: 'test',
       version: version,
     });
     expect(result.logging.destination).toBe(LogDestination.STDOUT);
@@ -174,44 +174,44 @@ describe('Configuration', () => {
     });
   });
 
-  it("should fail for missing API values", () => {
-      expect(getConfiguration).toThrow("API_URL is not provided");
+  it('should fail for missing API values', () => {
+    expect(getConfiguration).toThrow('API_URL is not provided');
   });
 
-  it("should fail for missing OAuth values", () => {
-    process.env[EnvVar.MONGODB_HOST] = "mongo://";
-    process.env[EnvVar.MONGODB_PASSWORD] = "pwd";
-    process.env[EnvVar.MONGODB_USER] = "usr";
+  it('should fail for missing OAuth values', () => {
+    process.env[EnvVar.MONGODB_HOST] = 'mongo://';
+    process.env[EnvVar.MONGODB_PASSWORD] = 'pwd';
+    process.env[EnvVar.MONGODB_USER] = 'usr';
     expect(() => {
-      getConfiguration( {
-        api: { url: "somevalue"},
-        oauth: {enabled: true}
-      } );
+      getConfiguration({
+        api: { url: 'somevalue' },
+        oauth: { enabled: true },
+      });
     }).toThrow(/OAUTH_.*/);
-    process.env[EnvVar.OAUTH_ENABLED] = "true";
+    process.env[EnvVar.OAUTH_ENABLED] = 'true';
     const t = () => {
-      getConfiguration( {
-        api: { url: "somevalue"}
+      getConfiguration({
+        api: { url: 'somevalue' },
       });
     };
     expect(t).toThrow(/OAUTH_.*/);
-    process.env[EnvVar.OAUTH_DISCOVERY] = "http://keptn";
+    process.env[EnvVar.OAUTH_DISCOVERY] = 'http://keptn';
     expect(t).toThrow(/OAUTH_.*/);
-    process.env[EnvVar.OAUTH_CLIENT_ID] = "abcdefg";
+    process.env[EnvVar.OAUTH_CLIENT_ID] = 'abcdefg';
     expect(t).toThrow(/OAUTH_.*/);
-    process.env[EnvVar.OAUTH_BASE_URL] = "http://keptn";
+    process.env[EnvVar.OAUTH_BASE_URL] = 'http://keptn';
     expect(t).not.toThrow();
   });
 
-  it("should fail for missing Mongo values", () => {
-      process.env[EnvVar.API_URL] = "http://localhost";
-      expect(getConfiguration).toThrow(/Could not construct mongodb connection string.*/);
-      process.env[EnvVar.MONGODB_HOST] = "mongo://";
-      expect(getConfiguration).toThrow(/Could not construct mongodb connection string.*/);
-      process.env[EnvVar.MONGODB_PASSWORD] = "pwd";
-      expect(getConfiguration).toThrow(/Could not construct mongodb connection string.*/);
-      process.env[EnvVar.MONGODB_USER] = "usr";
-      expect(getConfiguration).not.toThrow();
+  it('should fail for missing Mongo values', () => {
+    process.env[EnvVar.API_URL] = 'http://localhost';
+    expect(getConfiguration).toThrow(/Could not construct mongodb connection string.*/);
+    process.env[EnvVar.MONGODB_HOST] = 'mongo://';
+    expect(getConfiguration).toThrow(/Could not construct mongodb connection string.*/);
+    process.env[EnvVar.MONGODB_PASSWORD] = 'pwd';
+    expect(getConfiguration).toThrow(/Could not construct mongodb connection string.*/);
+    process.env[EnvVar.MONGODB_USER] = 'usr';
+    expect(getConfiguration).not.toThrow();
   });
 
   it('should set values using env var', () => {

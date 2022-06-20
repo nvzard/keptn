@@ -344,5 +344,4 @@ export class SessionService {
       });
     });
   }
-
 }
