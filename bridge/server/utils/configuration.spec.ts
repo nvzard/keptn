@@ -10,7 +10,7 @@ describe('Configuration', () => {
     cleanEnv();
   });
 
-  function cleanEnv() {
+  function cleanEnv(): void {
     for (const e in EnvVar) {
       delete process.env[e];
     }

@@ -23,6 +23,7 @@ const { SessionService } = await import('../user/session');
 jest.unstable_mockModule('../user/session', () => {
   return {
     SessionService: jest.fn().mockImplementation(() => {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return Object.assign(new SessionService(TestUtils.config), {
         async saveValidationData(state: string, codeVerifier: string, nonce: string): Promise<void> {
           store[state] = {
@@ -41,7 +42,7 @@ jest.unstable_mockModule('../user/session', () => {
   };
 });
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-use-before-define
 const { TestUtils } = await import('../.jest/test.utils');
 
 // has to be imported after jest mocked

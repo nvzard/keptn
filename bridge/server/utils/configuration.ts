@@ -194,7 +194,7 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   const apiConfig = getAPI(options);
   const authConfig = getAuth(apiConfig, options);
   const oauthConfig = getOAuth(options);
-  const urlsConfig = getURLs(options);
+  const urlsConfig = getURLs();
   const featConfig = getFeature(options);
   const mongoConfig = getMongo(options);
 
@@ -331,7 +331,7 @@ function getOAuth(options?: BridgeOption): OAuthConfig {
   };
 }
 
-function getURLs(options?: BridgeOption): URLsConfig {
+function getURLs(): URLsConfig {
   const cliURL = process.env[EnvVar.CLI_DOWNLOAD_LINK] ?? 'https://github.com/keptn/keptn/releases';
   const integrationURL = process.env[EnvVar.INTEGRATIONS_PAGE_LINK] ?? 'https://get.keptn.sh/integrations.html';
   const looksURL = process.env[EnvVar.LOOK_AND_FEEL_URL];
