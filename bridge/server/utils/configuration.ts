@@ -190,7 +190,32 @@ const _componentName = 'Configuration';
  * @returns Returns the Bridge-server configuration.
  */
 export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
-  // logging area
+  const logConfig = getLog(options);
+  const apiConfig = getAPI(options);
+  const authConfig = getAuth(apiConfig, options);
+  const oauthConfig = getOAuth(options);
+  const urlsConfig = getURLs(options);
+  const featConfig = getFeature(options);
+  const mongoConfig = getMongo(options);
+
+  // mode and version
+  const mode = (options?.mode ?? process.env[EnvVar.NODE_ENV]) === 'test' ? EnvType.TEST : EnvType.DEV;
+  const version = options?.version ?? process.env[EnvVar.VERSION] ?? 'develop';
+
+  return {
+    logging: logConfig,
+    api: apiConfig,
+    auth: authConfig,
+    oauth: oauthConfig,
+    urls: urlsConfig,
+    features: featConfig,
+    mode: mode,
+    mongo: mongoConfig,
+    version: version,
+  };
+}
+
+function getLog(options?: BridgeOption): LogConfiguration {
   const logDestination = options?.logging?.destination ?? LogDestination.STDOUT;
   const loggingComponents = Object.create({}) as EnabledComponents;
   const loggingComponentsString = options?.logging?.enabledComponents ?? process.env[EnvVar.LOGGING_COMPONENTS] ?? '';
@@ -201,12 +226,13 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
       loggingComponents[name] = value;
     }
   }
-  const logConfig = {
+  return {
     destination: logDestination,
     enabledComponents: loggingComponents,
   };
+}
 
-  // API area
+function getAPI(options?: BridgeOption): APIConfig {
   const _showToken = options?.api?.showToken ?? toBool(process.env[EnvVar.SHOW_API_TOKEN] ?? 'true');
   const apiUrl = options?.api?.url ?? process.env[EnvVar.API_URL];
   if (typeof apiUrl !== 'string') {
@@ -225,24 +251,25 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     }
   }
 
-  const apiConfig = {
+  return {
     showToken: _showToken,
     url: apiUrl,
     token: apiToken,
   };
+}
 
-  // Auth Area - no configuration necessary
+function getAuth(api: APIConfig, options?: BridgeOption): AuthConfig {
   const authMsg =
     options?.auth?.authMessage ??
     process.env[EnvVar.AUTH_MSG] ??
-    `keptn auth --endpoint=${apiUrl} --api-token=${apiToken}`;
+    `keptn auth --endpoint=${api.url} --api-token=${api.token}`;
   const basicUser = process.env[EnvVar.BASIC_AUTH_USERNAME];
   const basicPass = process.env[EnvVar.BASIC_AUTH_PASSWORD];
   const requestLimit = toInt(process.env[EnvVar.REQUEST_TIME_LIMIT], 60) * 60 * 1000;
   const requestWithinTime = toInt(process.env[EnvVar.REQUESTS_WITHIN_TIME], 10);
   const cleanBucket = toInt(process.env[EnvVar.CLEAN_BUCKET_INTERVAL], 60) * 60 * 1000;
 
-  const authConfig = {
+  return {
     authMessage: authMsg,
     basicUsername: basicUser,
     basicPassword: basicPass,
@@ -250,8 +277,9 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     nRequestWithinTime: requestWithinTime,
     cleanBucketIntervalMs: cleanBucket,
   };
+}
 
-  // OAuth area
+function getOAuth(options?: BridgeOption): OAuthConfig {
   const logoutURL = process.env[EnvVar.OAUTH_ALLOWED_LOGOUT_URLS] ?? '';
   let baseURL = options?.oauth?.baseURL ?? process.env[EnvVar.OAUTH_BASE_URL];
   let clientID = options?.oauth?.clientID ?? process.env[EnvVar.OAUTH_CLIENT_ID];
@@ -284,7 +312,7 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     baseURL = '';
   }
 
-  const oauthConfig = {
+  return {
     allowedLogoutURL: logoutURL,
     baseURL: baseURL,
     clientID: clientID,
@@ -301,19 +329,21 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     },
     tokenAlgorithm: algo,
   };
+}
 
-  // URL area
+function getURLs(options?: BridgeOption): URLsConfig {
   const cliURL = process.env[EnvVar.CLI_DOWNLOAD_LINK] ?? 'https://github.com/keptn/keptn/releases';
   const integrationURL = process.env[EnvVar.INTEGRATIONS_PAGE_LINK] ?? 'https://get.keptn.sh/integrations.html';
   const looksURL = process.env[EnvVar.LOOK_AND_FEEL_URL];
 
-  const urlsConfig = {
+  return {
     CLI: cliURL,
     integrationPage: integrationURL,
     lookAndFeel: looksURL,
   };
+}
 
-  // feature
+function getFeature(options?: BridgeOption): FeatureConfig {
   const provisioningMsg =
     options?.feature?.automaticProvisioningMessage ?? process.env[EnvVar.AUTOMATIC_PROVISIONING_MSG] ?? '';
   const configDir =
@@ -325,7 +355,7 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   const prefixPath = process.env[EnvVar.PREFIX_PATH] ?? '/';
   const versionCheck = toBool(process.env[EnvVar.ENABLE_VERSION_CHECK] ?? 'true');
 
-  const featConfig = {
+  return {
     automaticProvisioningMessage: provisioningMsg,
     configDir: configDir,
     installationType: installationType,
@@ -336,8 +366,9 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     prefixPath: prefixPath,
     versionCheck: versionCheck,
   };
+}
 
-  // mongo
+function getMongo(options?: BridgeOption): MongoConfig {
   const db = process.env[EnvVar.MONGODB_DATABASE] ?? 'openid';
   const host = options?.mongo?.host ?? process.env[EnvVar.MONGODB_HOST];
   const pwd = options?.mongo?.password ?? process.env[EnvVar.MONGODB_PASSWORD];
@@ -355,27 +386,11 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
     throw Error(errMsg);
   }
 
-  const mongoConfig: MongoConfig = {
+  return {
     db: db,
     host: host,
     password: pwd,
     user: usr,
-  };
-
-  // mode and version
-  const mode = (options?.mode ?? process.env[EnvVar.NODE_ENV]) === 'test' ? EnvType.TEST : EnvType.DEV;
-  const version = options?.version ?? process.env[EnvVar.VERSION] ?? 'develop';
-
-  return {
-    logging: logConfig,
-    api: apiConfig,
-    auth: authConfig,
-    oauth: oauthConfig,
-    urls: urlsConfig,
-    features: featConfig,
-    mode: mode,
-    mongo: mongoConfig,
-    version: version,
   };
 }
 

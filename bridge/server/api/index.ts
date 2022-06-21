@@ -3,7 +3,6 @@ import { AxiosError, Method } from 'axios';
 import { axios } from '../services/axios-instance';
 import { DataService } from '../services/data-service';
 import { KeptnInfoResult } from '../../shared/interfaces/keptn-info-result';
-import { EnvironmentUtils } from '../utils/environment.utils';
 import { ClientFeatureFlags } from '../feature-flags';
 import { EventTypes } from '../../shared/interfaces/event-types';
 import { SessionService } from '../user/session';
@@ -12,7 +11,6 @@ import { AuthType } from '../../shared/models/auth-type';
 import { KeptnVersions } from '../../shared/interfaces/keptn-versions';
 import { printError } from '../utils/print-utils';
 import { ComponentLogger } from '../utils/logger';
-import { version } from 'os';
 import { BridgeConfiguration } from '../utils/configuration';
 
 const router = Router();
