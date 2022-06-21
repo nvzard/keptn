@@ -3,12 +3,11 @@ import { baseOptions, setupServer } from '../.jest/setupServer';
 import { Express } from 'express';
 import { getConfiguration } from '../utils/configuration';
 
-
 describe('Test /bridgeInfo', () => {
   let app: Express;
 
-  const apiUrl = "http://localhost:8090/api"
-  const apiToken = 'abcdefg'
+  const apiUrl = 'http://localhost:8090/api';
+  const apiToken = 'abcdefg';
   const provMsg = '  message   ';
   const authMsg = 'a string';
   const version = 'testVersion';
@@ -25,16 +24,15 @@ describe('Test /bridgeInfo', () => {
         authMessage: authMsg,
       },
       feature: {
-        automaticProvisioningMessage: provMsg
+        automaticProvisioningMessage: provMsg,
       },
-      version: version
+      version: version,
     });
     app = await setupServer(conf);
   });
 
   it('should return bridgeInfo', async () => {
     const response = await request(app).get('/api/bridgeInfo');
-    console.log(response.body)
     expect(response.body).toEqual({
       bridgeVersion: version,
       apiUrl: apiUrl,
@@ -49,7 +47,7 @@ describe('Test /bridgeInfo', () => {
       authType: 'NONE',
       automaticProvisioningMsg: provMsg.trim(),
       authMsg: authMsg,
-      keptnInstallationType: "QUALITY_GATES,CONTINUOUS_OPERATIONS,CONTINUOUS_DELIVERY",
+      keptnInstallationType: 'QUALITY_GATES,CONTINUOUS_OPERATIONS,CONTINUOUS_DELIVERY',
       projectsPageSize: 50,
       servicesPageSize: 50,
     });

@@ -20,8 +20,8 @@ const baseOptions: BridgeOption = {
     password: 'pwd',
     user: 'usr',
   },
-  version: 'develop'
-}
+  version: 'develop',
+};
 
 const baseConfig = getConfiguration(baseOptions);
 
@@ -29,7 +29,7 @@ const setupServer = async (config: BridgeConfiguration = Object.create({})): Pro
   global.baseUrl = 'http://localhost/api/';
 
   // create a new fresh configuration
-  if(config && Object.keys(config).length === 0) {
+  if (config && Object.keys(config).length === 0) {
     config = getConfiguration(baseOptions);
   }
 

@@ -6,8 +6,8 @@ import {
 import { RemediationConfigResponse } from '../fixtures/remediation-config-response.mock';
 import { init } from '../app';
 import { Express } from 'express';
-import { BridgeOption, getConfiguration } from '../utils/configuration';
-import { baseOptions } from './setupServer'
+import { getConfiguration } from '../utils/configuration';
+import { baseOptions } from './setupServer';
 export class TestUtils {
   public static mockOpenRemediations(axiosMock: MockAdapter, projectName: string): void {
     axiosMock
@@ -51,6 +51,6 @@ export class TestUtils {
       clientID: 'myClientID',
       baseURL: 'http://localhost',
       discoveryURL: 'http://localhost/.well-known/openid-configuration',
-    }
+    },
   });
 }

@@ -19,6 +19,8 @@ jest.unstable_mockModule('../user/secrets', () => {
 // has to be imported after secrets mock due to mock limitations of jest
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { SessionService } = await import('../user/session');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const { TestUtils } = await import('../.jest/test.utils');
 
 jest.unstable_mockModule('../user/session', () => {
   return {
@@ -43,7 +45,6 @@ jest.unstable_mockModule('../user/session', () => {
 
 // has to be imported after jest mocked
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const { TestUtils } = await import('../.jest/test.utils');
 const { init } = await import('../app');
 const { baseOptions } = await import('../.jest/setupServer');
 const { getConfiguration } = await import('../utils/configuration');
@@ -69,7 +70,7 @@ describe('Test OAuth env variables', () => {
   });
 
   it('should throw errors if session secret is not provided', async () => {
-    let opt = getConfiguration(baseOptions);
+    const opt = getConfiguration(baseOptions);
     opt.oauth.enabled = true;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -86,7 +87,7 @@ describe('Test OAuth env variables', () => {
   });
 
   it('should throw errors if database encrypt secret is not provided', async () => {
-    let opt = getConfiguration(baseOptions);
+    const opt = getConfiguration(baseOptions);
     opt.oauth.enabled = true;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -103,7 +104,7 @@ describe('Test OAuth env variables', () => {
   });
 
   it('should throw errors if database encrypt secret length is invalid', async () => {
-    let opt = getConfiguration(baseOptions);
+    const opt = getConfiguration(baseOptions);
     opt.oauth.enabled = true;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
@@ -120,7 +121,7 @@ describe('Test OAuth env variables', () => {
   });
 
   it('should not register OAuth endpoints if OAuth is not enabled', async () => {
-    let opt = getConfiguration(baseOptions);
+    const opt = getConfiguration(baseOptions);
     opt.oauth.enabled = false;
     opt.oauth.clientID = 'myClientID';
     opt.oauth.baseURL = 'http://localhost';
