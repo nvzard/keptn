@@ -19,7 +19,7 @@ describe('Configuration', () => {
   const defaultAPIURL = 'http://localhost';
   const defaultAPIToken = 'abcdefgh';
 
-  function setBasicEnvVar() {
+  function setBasicEnvVar(): void {
     process.env[EnvVar.API_URL] = defaultAPIURL;
     process.env[EnvVar.API_TOKEN] = defaultAPIToken;
     process.env[EnvVar.MONGODB_HOST] = '';
@@ -189,7 +189,7 @@ describe('Configuration', () => {
       });
     }).toThrow(/OAUTH_.*/);
     process.env[EnvVar.OAUTH_ENABLED] = 'true';
-    const t = () => {
+    const t: () => void = () => {
       getConfiguration({
         api: { url: 'somevalue' },
       });
