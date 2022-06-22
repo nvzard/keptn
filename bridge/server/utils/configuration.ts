@@ -19,6 +19,7 @@ export interface BridgeOption {
 }
 
 export enum EnvType {
+  PRODUCTION = 'production',
   TEST = 'test',
   DEV = 'development',
 }
@@ -199,7 +200,8 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   const mongoConfig = getMongo(options);
 
   // mode and version
-  const mode = (options?.mode ?? process.env[EnvVar.NODE_ENV]) === 'test' ? EnvType.TEST : EnvType.DEV;
+  const _mode = options?.mode ?? process.env[EnvVar.NODE_ENV];
+  const mode = _mode === 'production' ? EnvType.PRODUCTION : _mode === 'test' ? EnvType.TEST : EnvType.DEV;
   const version = options?.version ?? process.env[EnvVar.VERSION] ?? 'develop';
 
   return {
