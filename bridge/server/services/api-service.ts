@@ -22,7 +22,7 @@ export class ApiService {
   private readonly log = new ComponentLogger('API');
 
   constructor(private readonly baseUrl: string, readonly apiToken: string | undefined, mode: EnvType) {
-    if (mode == EnvType.TEST && global.axiosInstance) {
+    if (mode === EnvType.TEST && global.axiosInstance) {
       this.axios = global.axiosInstance;
     } else {
       this.axios = Axios.create({

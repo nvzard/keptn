@@ -41,10 +41,10 @@ export class TestUtils {
   }
 
   public static async setupOAuthTest(): Promise<Express> {
-    return init(this.config);
+    return init(this.OAuthConfig);
   }
 
-  public static readonly config = getConfiguration({
+  public static readonly OAuthConfig = getConfiguration({
     ...baseOptions,
     oauth: {
       enabled: true,

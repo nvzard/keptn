@@ -191,17 +191,22 @@ const _componentName = 'Configuration';
  * @returns Returns the Bridge-server configuration.
  */
 export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
-  const logConfig = getLog(options);
-  const apiConfig = getAPI(options);
-  const authConfig = getAuth(apiConfig, options);
-  const oauthConfig = getOAuth(options);
-  const urlsConfig = getURLs();
-  const featConfig = getFeature(options);
-  const mongoConfig = getMongo(options);
+  const logConfig = getLogConfiguration(options);
+  const apiConfig = getAPIConfiguration(options);
+  const authConfig = getAuthConfiguration(apiConfig, options);
+  const oauthConfig = getOAuthConfiguration(options);
+  const urlsConfig = getURLsConfiguration();
+  const featConfig = getFeatureConfiguration(options);
+  const mongoConfig = getMongoConfiguration(options);
 
   // mode and version
   const _mode = options?.mode ?? process.env[EnvVar.NODE_ENV];
-  const mode = _mode === 'production' ? EnvType.PRODUCTION : _mode === 'test' ? EnvType.TEST : EnvType.DEV;
+  const modeMap = {
+    production: EnvType.PRODUCTION,
+    test: EnvType.TEST,
+    development: EnvType.DEV,
+  };
+  const mode = modeMap[_mode] ?? EnvType.DEV;
   const version = options?.version ?? process.env[EnvVar.VERSION] ?? 'develop';
 
   return {
@@ -217,7 +222,7 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   };
 }
 
-function getLog(options?: BridgeOption): LogConfiguration {
+function getLogConfiguration(options?: BridgeOption): LogConfiguration {
   const logDestination = options?.logging?.destination ?? LogDestination.STDOUT;
   const loggingComponents = Object.create({}) as EnabledComponents;
   const loggingComponentsString = options?.logging?.enabledComponents ?? process.env[EnvVar.LOGGING_COMPONENTS] ?? '';
@@ -234,10 +239,10 @@ function getLog(options?: BridgeOption): LogConfiguration {
   };
 }
 
-function getAPI(options?: BridgeOption): APIConfig {
+function getAPIConfiguration(options?: BridgeOption): APIConfig {
   const _showToken = options?.api?.showToken ?? toBool(process.env[EnvVar.SHOW_API_TOKEN] ?? 'true');
   const apiUrl = options?.api?.url ?? process.env[EnvVar.API_URL];
-  if (typeof apiUrl !== 'string') {
+  if (!apiUrl) {
     throw new Error('API_URL is not provided');
   }
   let apiToken = options?.api?.token ?? process.env[EnvVar.API_TOKEN];
@@ -260,10 +265,9 @@ function getAPI(options?: BridgeOption): APIConfig {
   };
 }
 
-function getAuth(api: APIConfig, options?: BridgeOption): AuthConfig {
+function getAuthConfiguration(api: APIConfig, options?: BridgeOption): AuthConfig {
   const authMsg =
-    options?.auth?.authMessage ??
-    process.env[EnvVar.AUTH_MSG] ??
+    (options?.auth?.authMessage ?? process.env[EnvVar.AUTH_MSG]) ||
     `keptn auth --endpoint=${api.url} --api-token=${api.token}`;
   const basicUser = process.env[EnvVar.BASIC_AUTH_USERNAME];
   const basicPass = process.env[EnvVar.BASIC_AUTH_PASSWORD];
@@ -281,7 +285,7 @@ function getAuth(api: APIConfig, options?: BridgeOption): AuthConfig {
   };
 }
 
-function getOAuth(options?: BridgeOption): OAuthConfig {
+function getOAuthConfiguration(options?: BridgeOption): OAuthConfig {
   const logoutURL = process.env[EnvVar.OAUTH_ALLOWED_LOGOUT_URLS] ?? '';
   let baseURL = options?.oauth?.baseURL ?? process.env[EnvVar.OAUTH_BASE_URL];
   let clientID = options?.oauth?.clientID ?? process.env[EnvVar.OAUTH_CLIENT_ID];
@@ -294,18 +298,18 @@ function getOAuth(options?: BridgeOption): OAuthConfig {
   const timeout = toInt(process.env[EnvVar.SESSION_TIMEOUT_MIN], 60);
   const proxyHops = toInt(process.env[EnvVar.TRUST_PROXY], 1);
   const validation = toInt(process.env[EnvVar.SESSION_VALIDATING_TIMEOUT_MIN], 60);
-  const algo = process.env[EnvVar.OAUTH_ID_TOKEN_ALG] ?? 'RS256';
+  const algo = process.env[EnvVar.OAUTH_ID_TOKEN_ALG] || 'RS256';
   if (enabled) {
     const errorSuffix =
       'must be defined when OAuth based login (OAUTH_ENABLED) is activated.' +
       ' Please check your environment variables.';
-    if (typeof discoveryURL !== 'string') {
+    if (!discoveryURL) {
       throw new Error(`OAUTH_DISCOVERY ${errorSuffix}`);
     }
-    if (typeof clientID !== 'string') {
+    if (!clientID) {
       throw new Error(`OAUTH_CLIENT_ID ${errorSuffix}`);
     }
-    if (typeof baseURL !== 'string') {
+    if (!baseURL) {
       throw new Error(`OAUTH_BASE_URL ${errorSuffix}`);
     }
   } else {
@@ -333,7 +337,7 @@ function getOAuth(options?: BridgeOption): OAuthConfig {
   };
 }
 
-function getURLs(): URLsConfig {
+function getURLsConfiguration(): URLsConfig {
   const cliURL = process.env[EnvVar.CLI_DOWNLOAD_LINK] ?? 'https://github.com/keptn/keptn/releases';
   const integrationURL = process.env[EnvVar.INTEGRATIONS_PAGE_LINK] ?? 'https://get.keptn.sh/integrations.html';
   const looksURL = process.env[EnvVar.LOOK_AND_FEEL_URL];
@@ -345,7 +349,7 @@ function getURLs(): URLsConfig {
   };
 }
 
-function getFeature(options?: BridgeOption): FeatureConfig {
+function getFeatureConfiguration(options?: BridgeOption): FeatureConfig {
   const provisioningMsg =
     options?.feature?.automaticProvisioningMessage ?? process.env[EnvVar.AUTOMATIC_PROVISIONING_MSG] ?? '';
   const configDir =
@@ -370,7 +374,7 @@ function getFeature(options?: BridgeOption): FeatureConfig {
   };
 }
 
-function getMongo(options?: BridgeOption): MongoConfig {
+function getMongoConfiguration(options?: BridgeOption): MongoConfig {
   const db = process.env[EnvVar.MONGODB_DATABASE] ?? 'openid';
   const host = options?.mongo?.host ?? process.env[EnvVar.MONGODB_HOST];
   const pwd = options?.mongo?.password ?? process.env[EnvVar.MONGODB_PASSWORD];
@@ -378,7 +382,7 @@ function getMongo(options?: BridgeOption): MongoConfig {
 
   const errMsg =
     'Could not construct mongodb connection string: env vars "MONGODB_HOST", "MONGODB_USER" and "MONGODB_PASSWORD" have to be set';
-  if (typeof host !== 'string') {
+  if (!host) {
     throw Error(errMsg);
   }
   if (typeof pwd !== 'string') {
@@ -417,7 +421,7 @@ function toBool(v: string): boolean {
  * @param d default value.
  */
 function toInt(v: string | undefined, d: number): number {
-  if (v != null) {
+  if (v) {
     const val = parseInt(v, 10);
     if (!isNaN(val)) {
       return val;
