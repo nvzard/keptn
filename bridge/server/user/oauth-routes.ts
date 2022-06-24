@@ -3,7 +3,7 @@ import { BaseClient, errors, generators, TokenSet } from 'openid-client';
 import { EndSessionData } from '../../shared/interfaces/end-session-data';
 import { SessionService } from './session';
 import { ComponentLogger } from '../utils/logger';
-import { BridgeConfiguration } from '../utils/configuration';
+import { BridgeConfiguration } from '../interfaces/configuration';
 
 const log = new ComponentLogger('OAuth');
 

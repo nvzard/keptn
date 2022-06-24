@@ -11,7 +11,7 @@ import { AuthType } from '../../shared/models/auth-type';
 import { KeptnVersions } from '../../shared/interfaces/keptn-versions';
 import { printError } from '../utils/print-utils';
 import { ComponentLogger } from '../utils/logger';
-import { BridgeConfiguration } from '../utils/configuration';
+import { BridgeConfiguration } from '../interfaces/configuration';
 
 const router = Router();
 const log = new ComponentLogger('APIService');

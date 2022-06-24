@@ -1,4 +1,5 @@
-import { BridgeConfiguration, EnvType, EnvVar, getConfiguration } from './configuration';
+import { BridgeConfiguration, EnvType } from '../interfaces/configuration';
+import { EnvVar, getConfiguration } from './configuration';
 import { LogDestination } from './logger';
 
 describe('Configuration', () => {
@@ -303,6 +304,3 @@ describe('Configuration', () => {
     });
   });
 });
-function BridgeConfig(arg0: {}, arg1: {}, BridgeConfig: any) {
-  throw new Error('Function not implemented.');
-}

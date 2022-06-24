@@ -36,7 +36,7 @@ import { ISequencesFilter } from '../../shared/interfaces/sequencesFilter';
 import { SecretScope, SecretScopeDefault } from '../../shared/interfaces/secret-scope';
 import { generateWebhookConfigCurl } from '../utils/curl.utils';
 import { ICustomSequences } from '../../shared/interfaces/custom-sequences';
-import { EnvType } from '../utils/configuration';
+import { EnvType } from '../interfaces/configuration';
 
 type TreeDirectory = ({ _: string[] } & { [key: string]: TreeDirectory }) | { _: string[] };
 type FlatSecret = { path: string; name: string; key: string; parsedPath: string };

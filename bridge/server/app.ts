@@ -19,7 +19,7 @@ import { SessionService } from './user/session';
 import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
 import { printError } from './utils/print-utils';
 import { AuthType } from '../shared/models/auth-type';
-import { AuthConfig, BridgeConfiguration, EnvType } from './utils/configuration';
+import { AuthConfig, BridgeConfiguration, EnvType } from './interfaces/configuration';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const __dirname = dirname(fileURLToPath(import.meta.url));

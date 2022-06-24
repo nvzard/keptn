@@ -1,5 +1,6 @@
 import { init as initApp } from './app';
-import { BridgeConfiguration, getConfiguration } from './utils/configuration';
+import { BridgeConfiguration } from './interfaces/configuration';
+import { getConfiguration } from './utils/configuration';
 import { logger } from './utils/logger';
 
 const PORT = normalizePort(process.env.PORT || '3000');

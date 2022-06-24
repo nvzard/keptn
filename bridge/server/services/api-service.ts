@@ -14,7 +14,7 @@ import { KeptnService } from '../../shared/models/keptn-service';
 import { IStage } from '../../shared/interfaces/stage';
 import { SequenceOptions, TraceOptions } from './data-service';
 import { ComponentLogger } from '../utils/logger';
-import { EnvType } from '../utils/configuration';
+import { EnvType } from '../interfaces/configuration';
 
 export class ApiService {
   private readonly axios: AxiosInstance;

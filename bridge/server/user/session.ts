@@ -8,7 +8,7 @@ import { Crypto } from './crypto';
 import { getRootLocation } from './oauth-routes';
 import { getOAuthMongoExternalConnectionString, getOAuthSecrets } from './secrets';
 import { ComponentLogger } from '../utils/logger';
-import { BridgeConfiguration, EnvType } from '../utils/configuration';
+import { BridgeConfiguration, EnvType } from '../interfaces/configuration';
 
 declare module 'express-session' {
   export interface SessionData {

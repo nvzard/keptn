@@ -5,7 +5,7 @@ import { getBuildableRootLocation, getRootLocation, oauthRouter, reduceRefreshDa
 import { defaultContentSecurityPolicyOptions } from '../app';
 import { contentSecurityPolicy } from 'helmet';
 import { ComponentLogger } from '../utils/logger';
-import { BridgeConfiguration } from '../utils/configuration';
+import { BridgeConfiguration } from '../interfaces/configuration';
 
 const refreshPromises: { [sessionId: string]: Promise<TokenSet> } = {};
 const reduceRefreshDateSeconds = 10;
