@@ -197,16 +197,16 @@ export function getConfiguration(options?: BridgeOption): BridgeConfiguration {
   const oauthConfig = getOAuthConfiguration(options);
   const urlsConfig = getURLsConfiguration();
   const featConfig = getFeatureConfiguration(options);
-  const mongoConfig = getMongoConfiguration(options);
+  const mongoConfig = getMongoConfiguration(options, oauthConfig.enabled);
 
   // mode and version
-  const _mode = options?.mode ?? process.env[EnvVar.NODE_ENV];
-  const modeMap = {
+  const _mode = options?.mode ?? (process.env[EnvVar.NODE_ENV] || 'development');
+  const modeMap: Record<string, EnvType> = {
     production: EnvType.PRODUCTION,
     test: EnvType.TEST,
     development: EnvType.DEV,
   };
-  const mode = modeMap[_mode] ?? EnvType.DEV;
+  const mode = modeMap[_mode];
   const version = options?.version ?? process.env[EnvVar.VERSION] ?? 'develop';
 
   return {
@@ -374,29 +374,30 @@ function getFeatureConfiguration(options?: BridgeOption): FeatureConfig {
   };
 }
 
-function getMongoConfiguration(options?: BridgeOption): MongoConfig {
+function getMongoConfiguration(options?: BridgeOption, doChecks = true): MongoConfig {
   const db = process.env[EnvVar.MONGODB_DATABASE] ?? 'openid';
   const host = options?.mongo?.host ?? process.env[EnvVar.MONGODB_HOST];
   const pwd = options?.mongo?.password ?? process.env[EnvVar.MONGODB_PASSWORD];
   const usr = options?.mongo?.user ?? process.env[EnvVar.MONGODB_USER];
-
-  const errMsg =
-    'Could not construct mongodb connection string: env vars "MONGODB_HOST", "MONGODB_USER" and "MONGODB_PASSWORD" have to be set';
-  if (!host) {
-    throw Error(errMsg);
-  }
-  if (typeof pwd !== 'string') {
-    throw Error(errMsg);
-  }
-  if (typeof usr !== 'string') {
-    throw Error(errMsg);
+  if (doChecks) {
+    const errMsg =
+      'Could not construct mongodb connection string: env vars "MONGODB_HOST", "MONGODB_USER" and "MONGODB_PASSWORD" have to be set';
+    if (!host) {
+      throw Error(errMsg);
+    }
+    if (typeof pwd !== 'string') {
+      throw Error(errMsg);
+    }
+    if (typeof usr !== 'string') {
+      throw Error(errMsg);
+    }
   }
 
   return {
     db: db,
-    host: host,
-    password: pwd,
-    user: usr,
+    host: host || '',
+    password: pwd || '',
+    user: usr || '',
   };
 }
 
