@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
@@ -21,7 +22,6 @@ import (
 
 	"github.com/keptn/go-utils/pkg/common/kubeutils"
 	"github.com/keptn/go-utils/pkg/common/strutils"
-	keptn2 "github.com/keptn/go-utils/pkg/lib"
 
 	"github.com/keptn/go-utils/pkg/common/retry"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -591,7 +591,14 @@ func ExecuteCommand(cmd string) (string, error) {
 	if len(split) == 0 {
 		return "", errors.New("invalid command")
 	}
-	return keptn2.ExecuteCommand(split[0], split[1:])
+	//return keptn2.ExecuteCommand(split[0], split[1:])
+
+	cmd2 := exec.Command(split[0], split[1:]...)
+	out, err := cmd2.CombinedOutput()
+	if err != nil {
+		return string(out), fmt.Errorf("Error executing command %s %s: %s\n%s", split[0], strings.Join(split[1:], " "), err.Error(), string(out))
+	}
+	return string(out), nil
 }
 
 func ExecuteCommandf(cmd string, a ...interface{}) (string, error) {
